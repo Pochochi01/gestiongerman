@@ -131,6 +131,7 @@ BingoDGG/
 | [docs/05-api.md](docs/05-api.md) | Referencia de todos los endpoints |
 | [docs/06-whatsapp.md](docs/06-whatsapp.md) | Integración Baileys y plantillas de mensajes |
 | [docs/07-seguridad.md](docs/07-seguridad.md) | JWT, roles y controles de acceso |
+| [docs/08-produccion.md](docs/08-produccion.md) | **Poner la base en producción en un VPS**: instalación, usuario dedicado, zona horaria, backups |
 
 ---
 
