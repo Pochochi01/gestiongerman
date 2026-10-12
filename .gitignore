@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.local
+
+# Credenciales de la sesion de WhatsApp: NUNCA versionar
+backend/session.json
+backend/session.json.tmp
+backend/session.json.corrupto-*
+backend/sessions/
+
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+*.log
+.DS_Store

@@ -1,0 +1,48 @@
+{
+  "name": "bingodgg-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API REST del sistema de Bingo (MVC - Node + Express + MySQL)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:install": "node scripts/install-db.js",
+    "seed:admin": "node scripts/seed-admin.js",
+    "test:e2e": "node scripts/e2e.js",
+    "test:sesion": "node scripts/test-sesion.js",
+    "migrar:celdas": "node scripts/migrar-celdas.js",
+    "test:carton": "node scripts/test-carton.js",
+    "migrar:nocturna": "node scripts/migrar-nocturna.js",
+    "test:quiniela": "node scripts/test-quiniela.js",
+    "migrar:posiciones": "node scripts/migrar-posiciones.js",
+    "test:posiciones": "node scripts/test-posiciones.js",
+    "seed:simulacion": "node scripts/seed-simulacion.js",
+    "seed:limpiar": "node scripts/seed-limpiar.js",
+    "test:gestion": "node scripts/test-gestion.js",
+    "migrar:pdf": "node scripts/migrar-pdf.js",
+    "test:pdf": "node scripts/test-pdf.js",
+    "migrar:sin-geo": "node scripts/migrar-sin-geo.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.9",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.11.3",
+    "pdfkit": "^0.20.2",
+    "pino": "^9.4.0",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

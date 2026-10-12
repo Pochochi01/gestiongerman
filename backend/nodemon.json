@@ -1,0 +1,20 @@
+{
+  "_comentario": [
+    "Sin esta configuración nodemon vigila toda la carpeta backend, y como",
+    "session.json se reescribe cada vez que Baileys actualiza credenciales,",
+    "el servidor se reinicia solo y la conexión con WhatsApp nunca llega a",
+    "abrirse. Acá se vigila únicamente el código fuente."
+  ],
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": [
+    "session.json",
+    "session.json.tmp",
+    "session.json.corrupto-*",
+    "sessions/*",
+    "uploads/*",
+    "scripts/*",
+    "*.log"
+  ],
+  "delay": 500
+}
