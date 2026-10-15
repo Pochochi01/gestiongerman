@@ -209,7 +209,7 @@ async function iniciar() {
     sock = makeWASocket({
       version,
       auth: auth.state,
-      browser: ['BingoDGG', 'Chrome', '1.0.0'],
+      browser: ['DGG Gestion', 'Chrome', '1.0.0'],
       syncFullHistory: false,
       markOnlineOnConnect: false,
     });

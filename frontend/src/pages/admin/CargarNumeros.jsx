@@ -102,7 +102,7 @@ export default function CargarNumeros() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-bold text-slate-900">
-          Cargar números - Bingo N° {sorteo.numero}
+          Cargar números — sorteo N° {sorteo.numero}
         </h1>
         <EstadoBadge estado={sorteo.estado} />
       </div>
@@ -130,10 +130,20 @@ export default function CargarNumeros() {
                 required
               />
             </div>
+            {/* No es un campo: el valor es fijo. Un input de solo lectura
+                prometia que se podia editar, y sacarlo del orden de tabulacion
+                para desmentirlo escondia el dato del teclado. */}
             <div>
-              <label className="label">Quiniela</label>
-              <input className="input bg-slate-50" value={LOTERIA} readOnly tabIndex={-1} />
-              <p className="mt-1 text-xs text-slate-500">Se registra siempre como {LOTERIA}.</p>
+              <p className="label" id="etiqueta-quiniela">
+                Quiniela
+              </p>
+              <p
+                className="flex min-h-touch items-center rounded-lg bg-slate-100 px-3 text-sm font-semibold text-slate-800 ring-1 ring-inset ring-slate-200"
+                aria-labelledby="etiqueta-quiniela"
+              >
+                {LOTERIA}
+              </p>
+              <p className="hint">Siempre se registra como {LOTERIA}.</p>
             </div>
             <div>
               <label className="label" htmlFor="numero_sorteo">N° de sorteo</label>
@@ -146,7 +156,7 @@ export default function CargarNumeros() {
                 value={numeroSorteo}
                 onChange={(e) => setNumeroSorteo(e.target.value.replace(/\D/g, '').slice(0, 8))}
               />
-              <p className="mt-1 text-xs text-slate-500">El de la quiniela de esa fecha.</p>
+              <p className="hint">El de la quiniela de esa fecha.</p>
             </div>
           </div>
 
@@ -157,13 +167,13 @@ export default function CargarNumeros() {
             <textarea
               id="numeros"
               rows={2}
-              className="input font-mono"
+              className="textarea font-mono"
               placeholder="1234 0078 5607 9041"
               value={entrada}
               onChange={(e) => setEntrada(e.target.value)}
               required
             />
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="hint">
               Separados por espacio, coma o salto de línea. El sistema toma las{' '}
               <span className="font-semibold">dos últimas cifras</span> de cada uno para validar los
               cartones.
@@ -189,8 +199,9 @@ export default function CargarNumeros() {
                     <span className="font-mono">{x.valor}</span>
                     {x.valido ? (
                       <>
-                        <span className="text-slate-400">→</span>
-                        <span className="font-bold text-bingo-700">
+                        <span className="text-slate-500" aria-hidden="true">→</span>
+                        <span className="sr-only">da el número</span>
+                        <span className="font-bold text-marca-700">
                           {String(x.numero).padStart(2, '0')}
                         </span>
                       </>
@@ -201,20 +212,22 @@ export default function CargarNumeros() {
                 ))}
               </div>
               {invalidos.length > 0 && (
-                <p className="mt-2 text-xs text-rose-600">
+                <p className="mt-2 text-xs font-medium text-rose-700">
                   Corrija los valores marcados: se admite de 1 a 4 cifras.
                 </p>
               )}
             </div>
           )}
 
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={enviando || interpretados.length === 0 || invalidos.length > 0}
-          >
-            {enviando ? 'Guardando...' : 'Cargar y validar cartones'}
-          </button>
+          <div className="btn-fila border-t border-slate-200 pt-4">
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={enviando || interpretados.length === 0 || invalidos.length > 0}
+            >
+              {enviando ? 'Guardando...' : 'Cargar y validar cartones'}
+            </button>
+          </div>
         </form>
       )}
 

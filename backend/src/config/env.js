@@ -14,6 +14,18 @@ const env = {
   // el jugador sepa donde entrar.
   appUrl: (process.env.APP_URL || 'http://localhost:5173').replace(/\/+$/, ''),
 
+  /**
+   * Saltos de proxy en los que confiar para leer la IP real del visitante
+   * (cabecera `X-Forwarded-For`). Detrás de nginx vale 1.
+   *
+   * Sin esto Express ve `127.0.0.1` como IP de TODOS los pedidos y los límites
+   * por IP se vuelven globales: el intento de login número 21 de cualquier
+   * usuario bloquearía a todos los demás durante 15 minutos.
+   */
+  trustProxy: Number(
+    process.env.TRUST_PROXY ?? (process.env.NODE_ENV === 'production' ? 1 : 0)
+  ),
+
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT || 3306),
@@ -24,7 +36,7 @@ const env = {
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET || 'bingodgg-dev-secret',
+    secret: process.env.JWT_SECRET || 'dgg-gestion-dev-secret',
     expiresIn: process.env.JWT_EXPIRES_IN || '8h',
   },
 
@@ -55,7 +67,7 @@ const env = {
   },
 };
 
-if (env.nodeEnv === 'production' && env.jwt.secret === 'bingodgg-dev-secret') {
+if (env.nodeEnv === 'production' && env.jwt.secret === 'dgg-gestion-dev-secret') {
   throw new Error('JWT_SECRET debe definirse en produccion');
 }
 

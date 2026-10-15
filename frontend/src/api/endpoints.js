@@ -8,6 +8,20 @@ export const authApi = {
     api.put('/auth/password', { password_actual: passwordActual, password_nueva: passwordNueva }).then(extraer),
 };
 
+export const administradoresApi = {
+  listar: (params) => api.get('/administradores', { params }).then(extraer),
+  obtener: (id) => api.get(`/administradores/${id}`).then(extraer),
+  /** Quien soy: sirve para no ofrecerme a mi mismo inhabilitar o eliminar. */
+  yo: () => api.get('/administradores/yo').then(extraer),
+  crear: (datos) => api.post('/administradores', datos).then(extraer),
+  actualizar: (id, datos) => api.put(`/administradores/${id}`, datos).then(extraer),
+  activacion: (id, activo) =>
+    api.patch(`/administradores/${id}/activacion`, { activo }).then(extraer),
+  /** Blanqueo: deja la clave igual al DNI y obliga a cambiarla al entrar. */
+  blanquear: (id) => api.post(`/administradores/${id}/blanqueo`).then(extraer),
+  eliminar: (id) => api.delete(`/administradores/${id}`).then(extraer),
+};
+
 export const vendedoresApi = {
   listar: (params) => api.get('/vendedores', { params }).then(extraer),
   obtener: (id) => api.get(`/vendedores/${id}`).then(extraer),

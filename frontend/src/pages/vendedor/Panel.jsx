@@ -41,7 +41,7 @@ export default function Panel() {
         <div className="card">
           <p className="text-xs uppercase tracking-wide text-slate-500">Mis clientes</p>
           <p className="text-3xl font-bold text-slate-900">{jugadores.length}</p>
-          <Link to="/vendedor/jugadores" className="text-sm text-bingo-600 hover:underline">
+          <Link to="/vendedor/jugadores" className="text-sm text-marca-600 hover:underline">
             Ver listado
           </Link>
         </div>

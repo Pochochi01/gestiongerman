@@ -1,5 +1,5 @@
 -- ============================================================================
---  BingoDGG - Esquema de base de datos (MySQL 8.x)
+--  DGG Gestion - Esquema de base de datos (MySQL 8.x)
 --  Normalizado hasta 3FN.
 --  Ejecutar:  mysql -u root -p < schema.sql
 -- ============================================================================
@@ -95,6 +95,9 @@ CREATE TABLE usuarios (
   password_hash  VARCHAR(255) NOT NULL,
   debe_cambiar_password TINYINT(1) NOT NULL DEFAULT 1,
   activo         TINYINT(1) NOT NULL DEFAULT 1,
+  -- Cuenta fundadora (la del seed). Es la unica que los administradores nuevos
+  -- no pueden ver ni modificar. Ver la tabla `administradores`.
+  es_raiz        TINYINT(1) NOT NULL DEFAULT 0,
   ultimo_acceso  DATETIME NULL,
   creado_en      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   actualizado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -105,6 +108,27 @@ CREATE TABLE usuarios (
 -- ---------------------------------------------------------------------------
 -- 4. VENDEDORES Y JUGADORES
 -- ---------------------------------------------------------------------------
+
+-- Datos personales de los administradores creados desde el sistema.
+--
+-- El administrador raiz NO tiene fila aca, y es a proposito: el CRUD de
+-- administradores trabaja sobre esta tabla, asi que una cuenta ausente es
+-- inalcanzable por id. La invisibilidad no depende de que un filtro se aplique
+-- en todas las consultas, sino de que no haya nada que encontrar.
+CREATE TABLE administradores (
+  id             INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  usuario_id     INT UNSIGNED NOT NULL UNIQUE,
+  apellido       VARCHAR(80) NOT NULL,
+  nombre         VARCHAR(80) NOT NULL,
+  dni            VARCHAR(15) NOT NULL UNIQUE,
+  creado_por     INT UNSIGNED NULL,
+  creado_en      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  actualizado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_administrador_usuario FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id) ON DELETE CASCADE,
+  CONSTRAINT fk_administrador_creador FOREIGN KEY (creado_por)
+    REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
 
 CREATE TABLE vendedores (
   id             INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,

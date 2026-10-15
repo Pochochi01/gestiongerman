@@ -1,6 +1,11 @@
 /**
  * Grilla para elegir los numeros del carton.
  * Limita la seleccion a `cantidad` (hasta 10, definido por el administrador).
+ *
+ * Cada numero es un boton de dos estados, no un boton de accion: lleva
+ * `aria-pressed` para que el lector de pantalla diga si esta elegido o no. El
+ * contador vive en una region `aria-live`, de modo que al tocar un numero se
+ * anuncia "7 de 10 elegidos" sin tener que recorrer la grilla para contarlos.
  */
 export default function SelectorNumeros({ min = 1, max = 90, cantidad = 10, valor = [], onChange }) {
   const numeros = Array.from({ length: max - min + 1 }, (_, i) => min + i);
@@ -22,16 +27,25 @@ export default function SelectorNumeros({ min = 1, max = 90, cantidad = 10, valo
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-medium text-slate-700">
-          Seleccionados: <span className={completo ? 'text-emerald-600' : 'text-bingo-600'}>{valor.length}</span>{' '}
-          de {cantidad}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* aria-live polite: avisa el cambio al terminar la frase en curso. */}
+        <p className="text-sm font-medium text-slate-700" aria-live="polite">
+          Elegidos:{' '}
+          <span className={`tabular font-bold ${completo ? 'text-emerald-700' : 'text-marca-700'}`}>
+            {valor.length}
+          </span>{' '}
+          de <span className="tabular">{cantidad}</span>
         </p>
         <div className="flex gap-2">
           <button type="button" className="btn-secondary" onClick={aleatorio}>
             Al azar
           </button>
-          <button type="button" className="btn-secondary" onClick={() => onChange([])}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => onChange([])}
+            disabled={valor.length === 0}
+          >
             Limpiar
           </button>
         </div>
@@ -46,12 +60,13 @@ export default function SelectorNumeros({ min = 1, max = 90, cantidad = 10, valo
               type="button"
               onClick={() => alternar(n)}
               disabled={!elegido && completo}
-              className={`aspect-square rounded-lg text-sm font-semibold ring-1 transition
-                ${
-                  elegido
-                    ? 'bg-bingo-600 text-white ring-bingo-700'
-                    : 'bg-white text-slate-700 ring-slate-200 hover:bg-bingo-50 disabled:opacity-40 disabled:hover:bg-white'
-                }`}
+              aria-pressed={elegido}
+              aria-label={`Número ${n}`}
+              className={`tabular grid aspect-square min-h-touch place-items-center rounded-lg text-sm font-semibold ring-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marca-500 focus-visible:ring-offset-1 ${
+                elegido
+                  ? 'bg-marca-600 text-white ring-marca-700'
+                  : 'bg-white text-slate-700 ring-slate-300 hover:bg-marca-50 disabled:opacity-40 disabled:hover:bg-white'
+              }`}
             >
               {n}
             </button>
@@ -61,7 +76,16 @@ export default function SelectorNumeros({ min = 1, max = 90, cantidad = 10, valo
 
       {valor.length > 0 && (
         <p className="text-sm text-slate-600">
-          Tu carton: <span className="font-semibold">{[...valor].sort((a, b) => a - b).join(' - ')}</span>
+          Su cartón:{' '}
+          <span className="tabular font-semibold text-slate-900">
+            {[...valor].sort((a, b) => a - b).join(' · ')}
+          </span>
+        </p>
+      )}
+
+      {completo && (
+        <p className="text-sm text-emerald-800">
+          Ya eligió los {cantidad} números. Para cambiar uno, tóquelo para quitarlo y elija otro.
         </p>
       )}
     </div>

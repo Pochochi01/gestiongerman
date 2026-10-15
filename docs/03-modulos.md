@@ -2,8 +2,33 @@
 
 ## Módulo 1 · Administrador
 
-**Backend:** `controllers/vendedor.controller.js`, `controllers/sorteo.controller.js`
+**Backend:** `controllers/administrador.controller.js`, `controllers/vendedor.controller.js`, `controllers/sorteo.controller.js`
 **Frontend:** `pages/admin/`
+
+### CRUD de administradores
+
+`/admin/administradores` — alta, edición, habilitación, **blanqueo de clave** y
+borrado de administradores. El alta crea el usuario con el DNI como nombre de
+usuario y como clave inicial, igual que con los vendedores, y lo marca para que
+la cambie al entrar.
+
+**La cuenta raíz.** El administrador que crea `npm run seed:admin` lleva
+`usuarios.es_raiz = 1` y no tiene fila en la tabla `administradores`. Todas las
+rutas del módulo resuelven el `:id` contra esa tabla, así que para los
+administradores creados desde el sistema esa cuenta no existe: no figura en el
+listado y no hay `:id` con el que leerla ni modificarla. No es un filtro de la
+interfaz ni un permiso que se chequea — es que no hay nada que encontrar.
+
+Fuera de eso, un administrador creado desde el sistema tiene las mismas
+facultades que el raíz, **incluida la de crear otros administradores**.
+
+Resguardos contra quedarse afuera: nadie se inhabilita ni se elimina a sí
+mismo, nadie se blanquea su propia clave (para eso está "Cambiar clave", que
+pide la actual), y ninguna operación puede dejar el sistema con cero
+administradores activos.
+
+El blanqueo deja `debe_cambiar_password = 1`. La app muestra entonces un aviso
+de clave provisoria en la cabecera, porque quien blanqueó la clave la conoce.
 
 ### CRUD de vendedores
 `/admin/vendedores` y `/admin/vendedores/nuevo`
@@ -353,7 +378,7 @@ ganadores. El mensaje dice que el cartón ganó y **cuántos ganadores hubo en
 total**, dato que sólo se conoce cuando están todos detectados:
 
 ```
-*BINGO DGG - FELICITACIONES, GANASTE!*
+*DGG GESTIÓN - FELICITACIONES, GANASTE!*
 
 SIMCabrera, Lucia: tu carton *S0002-C001512* completo todos sus numeros en el sorteo N° 2.
 *Fecha del sorteo:* 2026-09-30
@@ -374,7 +399,7 @@ reenviar si WhatsApp estaba caído. Responde 409 si el sorteo no tiene ganadores
 **URL del sistema y las credenciales**:
 
 ```
-*BINGO DGG - CARTON HABILITADO*
+*DGG GESTIÓN - CARTON HABILITADO*
 
 Hola Rocio, tu carton *S0002-C001048* del sorteo N° 2 fue *HABILITADO*. ...
 

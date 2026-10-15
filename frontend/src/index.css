@@ -2,31 +2,193 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   DGG Gestion - capa base
+   ========================================================================== */
 @layer base {
+  /* Respetar la preferencia del sistema de reducir movimiento. No es un
+     detalle estetico: hay usuarios con trastornos vestibulares a los que la
+     animacion les produce mareo. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  html {
+    /* Evita que el ancho de pagina salte al aparecer la barra de scroll. */
+    scrollbar-gutter: stable;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     @apply bg-slate-100 text-slate-800 antialiased;
   }
+
+  /* Las superficies que no dibujamos nosotros tambien son parte del diseño:
+     seleccion, cursor de texto y barra de scroll vienen con los valores del
+     navegador, que no pertenecen a ningun sistema de diseño. */
+  ::selection {
+    @apply bg-marca-200 text-marca-900;
+  }
+
+  :where(input, textarea) {
+    caret-color: theme('colors.marca.600');
+  }
+
+  * {
+    scrollbar-color: theme('colors.slate.400') theme('colors.slate.100');
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-400;
+    border: 2px solid theme('colors.slate.100');
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
+
+  /* Un unico anillo de foco para todo. `focus-visible` lo muestra al navegar
+     con teclado y lo oculta al hacer clic con el mouse. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-marca-500 ring-offset-2 ring-offset-white;
+  }
+
+  /* El subrayado por defecto corta los descendentes de las letras. */
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  /* Numeros tabulares: en una columna de importes o de aciertos, las cifras
+     deben alinearse verticalmente para poder compararlas de un barrido. */
+  :where(table, .tabular) {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
+/* ==========================================================================
+   Componentes
+   ========================================================================== */
 @layer components {
+  /* ---------- Botones ---------------------------------------------------- */
+  /* min-h-touch (44px) es el minimo tactil de WCAG 2.5.5. Con `py-2` los
+     botones quedaban en ~36px: fallaban el dedo en el telefono. */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold
-           transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50
-           disabled:cursor-not-allowed;
+    @apply inline-flex min-h-touch items-center justify-center gap-2 rounded-lg px-4 py-2.5
+           text-sm font-semibold transition-colors
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-60;
   }
-  .btn-primary { @apply btn bg-bingo-600 text-white hover:bg-bingo-700 focus:ring-bingo-500; }
-  .btn-secondary { @apply btn bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50; }
-  .btn-danger { @apply btn bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500; }
-  .btn-success { @apply btn bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500; }
+  .btn-primary {
+    @apply btn bg-marca-600 text-white hover:bg-marca-700 focus-visible:ring-marca-500;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-slate-700 ring-1 ring-inset ring-slate-300
+           hover:bg-slate-50 focus-visible:ring-marca-500;
+  }
+  .btn-danger {
+    @apply btn bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500;
+  }
+  .btn-success {
+    @apply btn bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-500;
+  }
+  /* En el telefono una fila de botones no entra al lado: que ocupen el ancho. */
+  .btn-fila {
+    @apply flex flex-col gap-2 sm:flex-row;
+  }
+  .btn-fila > .btn,
+  .btn-fila > a.btn-primary,
+  .btn-fila > a.btn-secondary,
+  .btn-fila > button {
+    @apply w-full sm:w-auto;
+  }
 
-  .card { @apply rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200; }
-  .label { @apply mb-1 block text-sm font-medium text-slate-700; }
+  .card {
+    @apply rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:p-5;
+  }
+
+  /* ---------- Formularios ----------------------------------------------- */
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700;
+  }
+
+  /* `border` explicito: antes habia `border-slate-300` sin ancho de borde y sin
+     el plugin @tailwindcss/forms, asi que los campos no dibujaban ningun borde.
+     `text-base` en movil porque iOS Safari hace zoom forzado sobre un input de
+     menos de 16px y descuadra el formulario entero. */
   .input {
-    @apply w-full rounded-lg border-slate-300 bg-white px-3 py-2 text-sm shadow-sm
-           focus:border-bingo-500 focus:ring-bingo-500;
+    @apply block min-h-touch w-full rounded-lg border border-slate-300 bg-white px-3 py-2
+           text-base text-slate-900 shadow-sm transition-colors
+           placeholder:text-slate-500
+           hover:border-slate-400
+           focus:border-marca-500 focus:outline-none focus:ring-2 focus:ring-marca-500/40
+           disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500
+           sm:text-sm;
   }
-  .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold; }
-  .th { @apply px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
-  .td { @apply px-3 py-2 text-sm text-slate-700; }
-}
+  /* Un campo invalido no se señala solo con color: lleva borde mas grueso,
+     texto de error propio y aria-invalid. El color es el refuerzo, no el dato. */
+  .input[aria-invalid='true'] {
+    @apply border-2 border-rose-500 focus:border-rose-500 focus:ring-rose-500/40;
+  }
+  .textarea {
+    @apply input min-h-[6rem] py-2;
+  }
+  .select {
+    @apply input appearance-none bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2364748b'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  }
+  .checkbox {
+    @apply h-5 w-5 rounded border-slate-400 text-marca-600
+           focus-visible:ring-2 focus-visible:ring-marca-500 focus-visible:ring-offset-2;
+  }
+  /* slate-500 y no slate-400: sobre blanco, slate-400 da 2.8:1 y no llega al
+     minimo de 4.5:1 para texto chico. */
+  .hint {
+    @apply mt-1.5 text-xs text-slate-500;
+  }
+  .error-texto {
+    @apply mt-1.5 flex items-start gap-1.5 text-xs font-medium text-rose-700;
+  }
+  .fieldset {
+    @apply space-y-4 border-t border-slate-200 pt-5;
+  }
+  .legend {
+    @apply mb-1 text-sm font-semibold text-slate-900;
+  }
 
+  /* ---------- Datos ------------------------------------------------------ */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .th {
+    @apply px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-slate-600;
+  }
+  .td {
+    @apply px-3 py-2.5 text-sm text-slate-700;
+  }
+  /* Una tabla ancha no se encoge hasta ser ilegible: se desplaza. El contenedor
+     es enfocable para que tambien se pueda recorrer con el teclado. */
+  .tabla-scroll {
+    @apply -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0;
+  }
+
+  /* Salto al contenido, visible solo al llegar con el teclado. */
+  .salto-contenido {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
+           focus:rounded-lg focus:bg-marca-700 focus:px-4 focus:py-2
+           focus:text-sm focus:font-semibold focus:text-white;
+  }
+}

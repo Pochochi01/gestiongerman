@@ -98,7 +98,7 @@ export function RankingCartones({ ranking = [], destacarJugadorId = null, limite
             return (
               <tr
                 key={r.id}
-                className={mio ? 'bg-bingo-50 font-medium' : r.puesto <= 3 ? 'bg-amber-50/60' : ''}
+                className={mio ? 'bg-marca-50 font-medium' : r.puesto <= 3 ? 'bg-amber-50/60' : ''}
               >
                 <td className="td font-bold text-slate-500">{r.puesto}</td>
                 <td className="td font-medium text-slate-900">
@@ -111,7 +111,7 @@ export function RankingCartones({ ranking = [], destacarJugadorId = null, limite
                 </td>
                 <td className="td">
                   {r.jugador_apellido}, {r.jugador_nombre}
-                  {mio && <span className="ml-2 text-xs text-bingo-700">(vos)</span>}
+                  {mio && <span className="ml-2 text-xs text-marca-700">(vos)</span>}
                 </td>
                 <td className="td text-slate-600">{r.vendedor_apellido}</td>
                 <td className="td">

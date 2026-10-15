@@ -37,6 +37,9 @@ async function verificarToken(req, res, next) {
       username: usuario.username,
       rol: usuario.rol,
       perfilId: payload.perfilId ?? null,
+      // Se lee de la base, no del token: una cuenta no puede declararse raiz
+      // firmando su propio payload.
+      esRaiz: !!usuario.es_raiz,
     };
     return next();
   } catch (err) {

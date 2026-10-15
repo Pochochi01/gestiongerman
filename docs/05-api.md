@@ -28,6 +28,56 @@ insuficiente · `404` inexistente · `409` conflicto de negocio · `500` error i
 
 ---
 
+## Administradores · rol ADMIN
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/administradores?q=&activo=` | Listado con búsqueda y filtro |
+| GET | `/administradores/yo` | Quién soy: `es_raiz` y mi `administrador_id` |
+| GET | `/administradores/:id` | Detalle |
+| POST | `/administradores` | Alta + usuario (devuelve las credenciales **una sola vez**) |
+| PUT | `/administradores/:id` | Edición de apellido y nombre (el DNI no cambia) |
+| PATCH | `/administradores/:id/activacion` | `{ activo: true \| false }` |
+| POST | `/administradores/:id/blanqueo` | Deja la clave igual al DNI y exige cambiarla |
+| DELETE | `/administradores/:id` | Borra la cuenta |
+
+```json
+POST /administradores
+{ "apellido": "Lopez", "nombre": "Ana", "dni": "40111222", "activo": true }
+
+201 -> { "id": 3, "dni": "40111222",
+         "credenciales": { "usuario": "40111222", "clave": "40111222" } }
+```
+
+### La cuenta raíz no se alcanza desde acá
+
+El administrador fundador (el que crea `npm run seed:admin`) lleva
+`usuarios.es_raiz = 1` y **no tiene fila en `administradores`**. Como todas
+estas rutas resuelven el `:id` contra esa tabla, la cuenta raíz no aparece en
+el listado y no hay ningún `:id` con el que pedirla, editarla, inhabilitarla,
+blanquearla ni borrarla.
+
+El `:id` de estas rutas es `administradores.id`, **no** `usuarios.id`. Un id que
+no corresponde a una ficha responde `404` con cualquier verbo. El 404 (y no un
+403) es deliberado: un 403 confirmaría que ese id existe y que hay una cuenta
+por encima.
+
+Los administradores creados acá tienen las mismas facultades que el raíz sobre
+todo lo demás, incluida la de crear otros administradores.
+
+### Resguardos
+
+| Situación | Respuesta |
+|-----------|-----------|
+| Inhabilitar o eliminar la propia cuenta | `409` |
+| Blanquear la propia clave | `409` (para eso está `PUT /auth/password`) |
+| Dejar el sistema con cero administradores activos | `409` |
+| DNI ya usado por un vendedor o un jugador | `409` con el motivo |
+| DNI con puntos o de largo distinto de 7-8 | `400` |
+| Un `VENDEDOR` o `JUGADOR` entrando al módulo | `403` |
+
+---
+
 ## Vendedores · rol ADMIN
 
 | Método | Ruta | Descripción |
@@ -332,7 +382,7 @@ Respuesta a un **VENDEDOR**:
   "whatsapp": { "habilitado": true,
                 "url": "https://api.whatsapp.com/send?phone=5493764123456&text=…",
                 "destino": "5493764123456",
-                "texto": "*BINGO DGG - TU CARTÓN* …",
+                "texto": "*DGG GESTIÓN - TU CARTÓN* …",
                 "mensaje_id": 1620 },
   "sorteo_iniciado": null, "advertencia": null }
 ```

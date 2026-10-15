@@ -56,7 +56,7 @@ export default function Panel() {
         <div className="card">
           <p className="text-xs uppercase tracking-wide text-slate-500">WhatsApp</p>
           <p className="text-lg font-bold capitalize text-slate-900">{wa?.estado || 'sin datos'}</p>
-          <Link to="/admin/whatsapp" className="text-sm text-bingo-600 hover:underline">
+          <Link to="/admin/whatsapp" className="text-sm text-marca-600 hover:underline">
             Ver panel
           </Link>
         </div>
@@ -68,7 +68,7 @@ export default function Panel() {
             <h2 className="font-semibold text-slate-900">
               {sorteo.nombre} - {sorteo.numeros_por_carton} numeros por carton
             </h2>
-            <Link to="/admin/sorteos" className="text-sm text-bingo-600 hover:underline">
+            <Link to="/admin/sorteos" className="text-sm text-marca-600 hover:underline">
               Administrar sorteos
             </Link>
           </div>

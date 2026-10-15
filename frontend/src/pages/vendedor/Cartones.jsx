@@ -265,7 +265,7 @@ export default function Cartones() {
                     key={s.sorteo_id}
                     className={
                       String(s.sorteo_id) === String(sorteoFiltro)
-                        ? "bg-bingo-50 ring-1 ring-inset ring-bingo-200"
+                        ? "bg-marca-50 ring-1 ring-inset ring-marca-200"
                         : "hover:bg-slate-50 cursor-pointer"
                     }
                     onClick={() => setSorteoFiltro(String(s.sorteo_id))}
@@ -285,7 +285,7 @@ export default function Cartones() {
                     <td className="td tabular-nums text-emerald-700">{s.pagados}</td>
                     <td className="td tabular-nums text-slate-700">
                       $ {Number(s.recaudado).toLocaleString()}
-                      <span className="block text-xs text-slate-400">
+                      <span className="block text-xs text-slate-600">
                         de $ {Number(s.total_a_rendir).toLocaleString()}
                       </span>
                     </td>

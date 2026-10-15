@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { sorteosApi } from '../../api/endpoints';
-import { Alerta, Cargando, EstadoBadge, Progreso, Vacio } from '../../components/ui';
+import { Alerta, Campo, Cargando, EstadoBadge, Progreso, Vacio } from '../../components/ui';
 
 /** Un sorteo es "activo" mientras no esté cerrado. */
 const ACTIVOS = ['CONFIGURACION', 'EN_VENTA', 'EN_CURSO'];
@@ -21,10 +21,10 @@ function SlotSorteo({ sorteo: s, accion }) {
       <Link to={`/admin/sorteos/${s.id}`} className="block space-y-3 rounded-lg hover:bg-slate-50">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="font-semibold text-bingo-700 hover:underline">
+            <p className="font-semibold text-marca-700 hover:underline">
               Sorteo N° {s.numero} - {s.nombre}
             </p>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-600">
               {s.numeros_por_carton} numeros por carton · rango {s.rango_min} a {s.rango_max} ·{' '}
               {s.cartones_vendidos} cartones
             </p>
@@ -32,7 +32,7 @@ function SlotSorteo({ sorteo: s, accion }) {
           <EstadoBadge estado={s.estado} />
         </div>
         <Progreso vendidos={s.cartones_vendidos} objetivo={s.cartones_objetivo} />
-        <p className="text-xs text-slate-400">Ver detalle, cartones y resumen por vendedor →</p>
+        <p className="text-xs text-slate-600">Ver detalle, cartones y resumen por vendedor →</p>
       </Link>
 
       <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-3">
@@ -163,73 +163,67 @@ export default function Sorteos() {
       <form onSubmit={crear} className="card space-y-4">
         <h2 className="font-semibold text-slate-900">Definir un nuevo sorteo</h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="sm:col-span-3">
-            <label className="label">Nombre</label>
-            <input
-              className="input"
-              placeholder="Bingo solidario de octubre"
-              value={form.nombre}
-              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="label">Cartones a vender *</label>
-            <input
-              type="number"
-              min={1}
-              className="input"
-              value={form.cartones_objetivo}
-              onChange={(e) => setForm({ ...form, cartones_objetivo: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="label">Numeros por carton (1 a 10) *</label>
-            <input
-              type="number"
-              min={1}
-              max={10}
-              className="input"
-              value={form.numeros_por_carton}
-              onChange={(e) => setForm({ ...form, numeros_por_carton: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label className="label">Precio del carton</label>
-            <input
-              type="number"
-              min={0}
-              step="0.01"
-              className="input"
-              value={form.precio_carton}
-              onChange={(e) => setForm({ ...form, precio_carton: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="label">Numero minimo</label>
-            <input
-              type="number"
-              min={0}
-              className="input"
-              value={form.rango_min}
-              onChange={(e) => setForm({ ...form, rango_min: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="label">Numero maximo</label>
-            <input
-              type="number"
-              min={1}
-              className="input"
-              value={form.rango_max}
-              onChange={(e) => setForm({ ...form, rango_max: e.target.value })}
-            />
-          </div>
+          <Campo
+            etiqueta="Nombre"
+            contenedorClassName="sm:col-span-3"
+            maxLength={80}
+            placeholder="Sorteo solidario de octubre"
+            value={form.nombre}
+            onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+            ayuda="Opcional. Si lo deja vacío se identifica solo por su número."
+          />
+          <Campo
+            etiqueta="Cartones a vender"
+            requerido
+            type="number"
+            inputMode="numeric"
+            min={1}
+            value={form.cartones_objetivo}
+            onChange={(e) => setForm({ ...form, cartones_objetivo: e.target.value })}
+            ayuda="Al venderse el último, el sorteo arranca solo."
+          />
+          <Campo
+            etiqueta="Números por cartón"
+            requerido
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={10}
+            value={form.numeros_por_carton}
+            onChange={(e) => setForm({ ...form, numeros_por_carton: e.target.value })}
+            ayuda="De 1 a 10."
+          />
+          <Campo
+            etiqueta="Precio del cartón"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step="0.01"
+            value={form.precio_carton}
+            onChange={(e) => setForm({ ...form, precio_carton: e.target.value })}
+          />
+          <Campo
+            etiqueta="Número mínimo"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={form.rango_min}
+            onChange={(e) => setForm({ ...form, rango_min: e.target.value })}
+          />
+          <Campo
+            etiqueta="Número máximo"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            value={form.rango_max}
+            onChange={(e) => setForm({ ...form, rango_max: e.target.value })}
+          />
         </div>
-        <button type="submit" className="btn-primary" disabled={enviando}>
-          {enviando ? 'Creando...' : 'Crear sorteo'}
-        </button>
+        <div className="btn-fila border-t border-slate-200 pt-4">
+          <button type="submit" className="btn-primary" disabled={enviando}>
+            {enviando ? 'Creando...' : 'Crear sorteo'}
+          </button>
+        </div>
       </form>
 
       {cargando ? (

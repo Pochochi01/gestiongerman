@@ -148,6 +148,7 @@ npm run migrar:nocturna     # 002  carga por quiniela (4 cifras)
 npm run migrar:posiciones   # 003  posiciones 1..20 del sorteo
 npm run migrar:pdf          # 004  PDF, QR y color por sorteo
 npm run migrar:sin-geo      # 005  se quita la geolocalización (IRREVERSIBLE)
+npm run migrar:administradores  # 006  varios administradores + cuenta raíz
 ```
 
 Antes de cada migración, **backup**. La 005 borra coordenadas y no se puede
@@ -306,7 +307,27 @@ cortas.
 
 ---
 
-## 8. Arranque permanente de la API
+## 8. nginx y el arranque de la API
+
+Los archivos listos para copiar al VPS están en **[../deploy/](../deploy/)**:
+
+| Archivo | Para qué |
+|---------|----------|
+| `deploy/nginx/bingodgg.conf` | Sitio de nginx: sirve la SPA y proxyea `/api` y `/uploads` |
+| `deploy/ecosystem.config.cjs` | Proceso de la API en PM2 |
+| `deploy/README.md` | Pasos, permisos, HTTPS y diagnóstico de errores 500/502 |
+
+Dos cosas que la configuración de nginx resuelve y que son fáciles de pasar por
+alto:
+
+- **`client_max_body_size 10m`**: el default de nginx es 1 MB y multer acepta
+  5 MB, así que los comprobantes grandes fallaban con 413 antes de llegar a la
+  aplicación.
+- **`X-Forwarded-For` + `TRUST_PROXY=1`**: sin eso, Express ve `127.0.0.1` como
+  IP de todos los pedidos y el límite de 20 logins cada 15 minutos se vuelve
+  **global** — el intento 21 de cualquier usuario bloquea a todos.
+
+### Arranque permanente de la API
 
 Con systemd (o PM2, si preferís):
 
@@ -316,7 +337,7 @@ sudo nano /etc/systemd/system/bingodgg.service
 
 ```ini
 [Unit]
-Description=BingoDGG API
+Description=DGG Gestión API
 After=network.target mysql.service
 Requires=mysql.service
 

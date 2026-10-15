@@ -37,7 +37,8 @@ mensajes_whatsapp >── tipos_mensaje, estados_envio, jugadores, cartones
 ### Personas
 | Tabla | Campos propios |
 |-------|----------------|
-| `usuarios` | `username` (DNI), `password_hash` (bcrypt), `rol_id`, `activo` |
+| `usuarios` | `username` (DNI), `password_hash` (bcrypt), `rol_id`, `activo`, `es_raiz` |
+| `administradores` | apellido, nombre, DNI, `creado_por`. **No contiene la cuenta raíz** |
 | `vendedores` | apellido, nombre, DNI, teléfono, `domicilio_id`, `habilitado` |
 | `jugadores` | apellido, nombre, DNI, `whatsapp`, `vendedor_id` |
 
@@ -142,6 +143,7 @@ se validan con las dos últimas. Eso se refleja en dos tablas:
 
 | Tabla | Columna | Contenido |
 |-------|---------|-----------|
+| `usuarios` | `es_raiz` | `1` en el administrador fundador. Es la única cuenta que los administradores creados desde el sistema no pueden ver ni tocar: no tiene fila en `administradores`, que es la tabla contra la que resuelve el `:id` de ese CRUD |
 | `jornadas` | `nombre` | Lotería de origen. Fijo en `'Nocturna'` |
 | `jornadas` | `numero_sorteo` | Número de sorteo de esa quiniela (NULL si no se informó) |
 | `numeros_extraidos` | `valor_cargado` | Lo que tipeó el administrador (ej. `1234`) |

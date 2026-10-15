@@ -1,5 +1,5 @@
 -- ============================================================================
---  BingoDGG - Datos iniciales (catalogos + admin)
+--  DGG Gestión - Datos iniciales (catalogos + admin)
 --  Ejecutar DESPUES de schema.sql:  mysql -u root -p bingodgg < seed.sql
 --  El usuario admin se crea con el script:  npm run seed:admin
 -- ============================================================================

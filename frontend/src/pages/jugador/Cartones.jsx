@@ -33,7 +33,7 @@ export default function Cartones() {
       {lista.length === 0 ? (
         <Vacio>
           Todavía no tiene cartones.{' '}
-          <Link to="/jugador/elegir" className="text-bingo-600 hover:underline">
+          <Link to="/jugador/elegir" className="text-marca-600 hover:underline">
             Elegir mis números
           </Link>
         </Vacio>
@@ -50,7 +50,7 @@ export default function Cartones() {
               <Link
                 key={c.id}
                 to={`/jugador/cartones/${c.id}`}
-                className="card space-y-3 transition hover:ring-bingo-300"
+                className="card space-y-3 transition hover:ring-marca-300"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>

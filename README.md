@@ -1,4 +1,4 @@
-# Bingo DGG
+# DGG Gestión
 
 Sistema de bingo con venta de cartones por vendedores, sorteo diario validado
 automáticamente y envío de cartones por WhatsApp.
@@ -93,7 +93,7 @@ npm run dev               # http://localhost:5173
 ## Estructura
 
 ```
-BingoDGG/
+DGG Gestión/
 ├── backend/
 │   ├── database/
 │   │   ├── schema.sql          # esquema 3FN

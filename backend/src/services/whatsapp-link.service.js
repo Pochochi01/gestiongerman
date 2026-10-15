@@ -35,7 +35,7 @@ function textoCarton({ sorteo, jugador, vendedor, carton, numeros, urlPdf }) {
   const lista = (numeros || []).map((n) => String(n).padStart(2, '0')).join(' - ');
 
   return [
-    '*BINGO DGG - TU CARTÓN*',
+    '*DGG GESTIÓN - TU CARTÓN*',
     '',
     `*Sorteo N°:* ${sorteo.numero} - ${sorteo.nombre}`,
     `*Cartón N°:* ${carton.codigo}`,

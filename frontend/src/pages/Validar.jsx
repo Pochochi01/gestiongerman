@@ -29,11 +29,11 @@ export default function Validar() {
     <div className="flex min-h-screen items-start justify-center bg-slate-100 p-4">
       <div className="w-full max-w-2xl space-y-4 py-6">
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-lg bg-bingo-600 text-lg font-black text-white">
+          <span className="grid h-10 w-10 place-items-center rounded-lg bg-marca-600 text-lg font-black text-white">
             B
           </span>
           <div>
-            <p className="font-bold text-slate-900">Bingo DGG</p>
+            <p className="font-bold text-slate-900">DGG Gestión</p>
             <p className="text-xs text-slate-500">Validación de cartón</p>
           </div>
         </div>

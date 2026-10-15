@@ -228,7 +228,7 @@ function coloresDelPdf(ruta) {
     const usados = coloresDelPdf(sinComprimir.ruta);
 
     console.log('\n=== Contenido del PDF ===');
-    ['BINGO DGG', 'JUGADOR', 'VENDEDOR', 'uso exclusivo del vendedor', 'evitar estafas'].forEach((t) =>
+    ['DGG GESTIÓN', 'JUGADOR', 'VENDEDOR', 'uso exclusivo del vendedor', 'evitar estafas'].forEach((t) =>
       ok(texto.includes(t), `el PDF dice "${t}"`)
     );
 

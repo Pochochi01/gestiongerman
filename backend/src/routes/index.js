@@ -9,7 +9,29 @@ const rateLimit = require('express-rate-limit');
 
 const router = Router();
 
-router.get('/salud', (req, res) => res.json({ ok: true, data: { servicio: 'bingodgg-api' } }));
+router.get('/salud', (req, res) => res.json({ ok: true, data: { servicio: 'dgg-gestion-api' } }));
+
+// Indice de la API. Antes entrar a /api devolvia el 404 generico, que no
+// distingue "el servicio no esta" de "esta, pero esa ruta no existe".
+router.get('/', (req, res) =>
+  res.json({
+    ok: true,
+    data: {
+      servicio: 'dgg-gestion-api',
+      recursos: {
+        salud: 'GET /api/salud',
+        autenticacion: '/api/auth',
+        administradores: '/api/administradores (solo administrador)',
+        vendedores: '/api/vendedores',
+        jugadores: '/api/jugadores',
+        sorteos: '/api/sorteos',
+        cartones: '/api/cartones',
+        validacion_publica: 'GET /api/validar/:token',
+        whatsapp: '/api/whatsapp (solo administrador)',
+      },
+    },
+  })
+);
 
 // Validacion publica del QR del PDF: sin token JWT, acotada por el token del
 // carton. Va antes de las rutas autenticadas.
@@ -19,6 +41,7 @@ router.get('/validar/:token', limitePublico, validacionCtrl.validar);
 router.get('/validar/:token/pdf', limitePublico, validacionCtrl.pdf);
 
 router.use('/auth', require('./auth.routes'));
+router.use('/administradores', require('./administrador.routes'));
 router.use('/vendedores', require('./vendedor.routes'));
 router.use('/jugadores', require('./jugador.routes'));
 router.use('/sorteos', require('./sorteo.routes'));

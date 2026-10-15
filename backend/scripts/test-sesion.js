@@ -36,7 +36,7 @@ const ok = (cond, texto) => {
   console.log('\n=== 2. Se guardan credenciales y claves ===');
   // Simula lo que hace Baileys tras escanear el QR.
   a.state.creds.registered = true;
-  a.state.creds.me = { id: '5493764123456:1@s.whatsapp.net', name: 'BingoDGG' };
+  a.state.creds.me = { id: '5493764123456:1@s.whatsapp.net', name: 'DGG Gestión' };
   await a.state.keys.set({
     'pre-key': { 1: { public: Buffer.from([1, 2, 3]), private: Buffer.from([4, 5, 6]) } },
     'session': { '5493764123456.0': Buffer.from('sesion-signal') },

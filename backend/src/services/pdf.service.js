@@ -126,7 +126,7 @@ async function generarCartonPdf({ carton, sorteo, jugador, vendedor, grilla, com
     // prueba automática para verificar textos y colores sin un renderizador.
     const doc = new PDFDocument({ size: 'A4', margin: MARGEN, compress: comprimir, info: {
       Title: `Carton ${carton.codigo}`,
-      Author: 'Bingo DGG',
+      Author: 'DGG Gestión',
       Subject: `Sorteo N° ${sorteo.numero} - ${sorteo.nombre}`,
     } });
 
@@ -148,7 +148,7 @@ async function generarCartonPdf({ carton, sorteo, jugador, vendedor, grilla, com
       .fillColor(tintaCabecera)
       .font('Helvetica-Bold')
       .fontSize(20)
-      .text('BINGO DGG', MARGEN + 16, y + 12);
+      .text('DGG GESTIÓN', MARGEN + 16, y + 12);
     doc
       .font('Helvetica')
       .fontSize(10.5)
@@ -243,7 +243,7 @@ async function generarCartonPdf({ carton, sorteo, jugador, vendedor, grilla, com
       .fontSize(7.5)
       .fillColor(TINTA_SUAVE)
       .text(
-        `Bingo DGG · Sorteo N° ${sorteo.numero} · Cartón ${carton.codigo} · ` +
+        `DGG Gestión · Sorteo N° ${sorteo.numero} · Cartón ${carton.codigo} · ` +
           `${grilla.filter((c) => c.numero !== null).length} números · ` +
           `rango ${sorteo.rango_min} a ${sorteo.rango_max}`,
         MARGEN,

@@ -17,7 +17,7 @@ const lista = (numeros) => numeros.join(' - ');
  */
 function cartonNuevo({ sorteo, jugador, vendedor, carton, numeros }) {
   return [
-    '*BINGO DGG - TU CARTON*',
+    '*DGG GESTIÓN - TU CARTON*',
     '',
     `*Sorteo N°:* ${sorteo.numero} - ${sorteo.nombre}`,
     `*Carton N°:* ${carton.codigo}`,
@@ -47,7 +47,7 @@ function cartonNuevo({ sorteo, jugador, vendedor, carton, numeros }) {
  */
 function cartonHabilitado({ sorteo, carton, jugador, url, usuario, claveInicial = null }) {
   return [
-    '*BINGO DGG - CARTON HABILITADO*',
+    '*DGG GESTIÓN - CARTON HABILITADO*',
     '',
     `Hola ${jugador.nombre}, tu carton *${carton.codigo}* del sorteo N° ${sorteo.numero} ` +
       'fue *HABILITADO*. El vendedor ya rindio cuentas.',
@@ -68,7 +68,7 @@ function cartonHabilitado({ sorteo, carton, jugador, url, usuario, claveInicial 
 /** Aviso masivo: se completo la venta y arranca el sorteo. */
 function sorteoIniciado({ sorteo, jugador }) {
   return [
-    '*BINGO DGG - COMIENZA EL SORTEO*',
+    '*DGG GESTIÓN - COMIENZA EL SORTEO*',
     '',
     `Hola ${jugador.nombre}: se completo la venta de los ${sorteo.cartones_objetivo} cartones ` +
       `del sorteo N° ${sorteo.numero} - ${sorteo.nombre}.`,
@@ -85,9 +85,9 @@ function sorteoIniciado({ sorteo, jugador }) {
  */
 function numerosDelDia({ sorteo, fecha, numeros, jugador, loteria, numeroSorteo }) {
   return [
-    '*BINGO DGG - NUMEROS DEL DIA*',
+    '*DGG GESTIÓN - NUMEROS DEL DIA*',
     '',
-    `*Bingo N°:* ${sorteo.numero}`,
+    `*Sorteo N°:* ${sorteo.numero}`,
     `*Fecha:* ${fecha}`,
     ...(loteria ? [`*Quiniela:* ${loteria}`] : []),
     ...(numeroSorteo ? [`*Sorteo N°:* ${numeroSorteo}`] : []),
@@ -107,7 +107,7 @@ function ganador({ sorteo, carton, jugador, fecha, totalGanadores = 1, vendedor 
   const otros = Math.max(0, Number(totalGanadores) - 1);
 
   return [
-    '*BINGO DGG - FELICITACIONES, GANASTE!*',
+    '*DGG GESTIÓN - FELICITACIONES, GANASTE!*',
     '',
     `${jugador.apellido}, ${jugador.nombre}: tu carton *${carton.codigo}* ` +
       `completo todos sus numeros en el sorteo N° ${sorteo.numero}.`,

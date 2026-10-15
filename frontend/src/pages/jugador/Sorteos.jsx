@@ -42,7 +42,7 @@ export default function Sorteos() {
         <h1 className="text-xl font-bold text-slate-900">Mis sorteos</h1>
         <Vacio>
           Todavía no participaste de ningún sorteo.{' '}
-          <Link to="/jugador/elegir" className="text-bingo-600 hover:underline">
+          <Link to="/jugador/elegir" className="text-marca-600 hover:underline">
             Elegir mis números
           </Link>
         </Vacio>
@@ -72,7 +72,7 @@ export default function Sorteos() {
               onClick={() => setAbierto(esteAbierto ? null : sorteo.id)}
               className="flex w-full flex-wrap items-center gap-3 text-left"
             >
-              <span className="text-slate-400">{esteAbierto ? '▼' : '▶'}</span>
+              <span className="text-slate-500" aria-hidden="true">{esteAbierto ? '▼' : '▶'}</span>
               <div className="min-w-0 flex-1">
                 <p className="font-bold text-slate-900">
                   Sorteo N° {sorteo.numero} — {sorteo.nombre}
@@ -167,7 +167,7 @@ export default function Sorteos() {
                         <Link
                           key={c.id}
                           to={`/jugador/cartones/${c.id}`}
-                          className="space-y-2 rounded-lg p-3 ring-1 ring-slate-200 hover:ring-bingo-300"
+                          className="space-y-2 rounded-lg p-3 ring-1 ring-slate-200 hover:ring-marca-300"
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-semibold text-slate-900">{c.codigo}</span>

@@ -7,7 +7,7 @@ const exec = (conn, sql, params = []) => (conn || pool).execute(sql, params);
 
 const SELECT_BASE = `
   SELECT u.id, u.username, u.password_hash, u.activo, u.debe_cambiar_password,
-         u.rol_id, r.codigo AS rol, u.creado_en, u.ultimo_acceso
+         u.es_raiz, u.rol_id, r.codigo AS rol, u.creado_en, u.ultimo_acceso
   FROM usuarios u
   JOIN roles r ON r.id = u.rol_id`;
 
@@ -35,9 +35,23 @@ const actualizarPassword = (usuarioId, passwordHash) =>
     usuarioId,
   ]);
 
+/**
+ * Blanqueo: deja una clave provisoria y marca que hay que cambiarla.
+ *
+ * Es lo contrario de `actualizarPassword`, que la da por definitiva. Quien
+ * blanquea conoce la clave que queda puesta, asi que no puede seguir siendo
+ * valida indefinidamente.
+ */
+const blanquearPassword = (usuarioId, passwordHash, conn = null) =>
+  exec(conn, 'UPDATE usuarios SET password_hash = ?, debe_cambiar_password = 1 WHERE id = ?', [
+    passwordHash,
+    usuarioId,
+  ]);
+
 const registrarAcceso = (usuarioId) =>
   query('UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = ?', [usuarioId]);
 
 module.exports = {
-  buscarPorUsername, buscarPorId, crear, actualizarEstado, actualizarPassword, registrarAcceso,
+  buscarPorUsername, buscarPorId, crear, actualizarEstado, actualizarPassword,
+  blanquearPassword, registrarAcceso,
 };

@@ -8,6 +8,8 @@ import CambiarPassword from './pages/CambiarPassword';
 import Validar from './pages/Validar';
 
 import AdminPanel from './pages/admin/Panel';
+import AdminAdministradores from './pages/admin/Administradores';
+import AdminAdministradorForm from './pages/admin/AdministradorForm';
 import AdminVendedores from './pages/admin/Vendedores';
 import AdminVendedorForm from './pages/admin/VendedorForm';
 import AdminSorteos from './pages/admin/Sorteos';
@@ -52,6 +54,9 @@ export default function App() {
 
         {/* ---- Modulo 1: Administrador ---- */}
         <Route path="/admin" element={<RutaProtegida roles={['ADMIN']}><AdminPanel /></RutaProtegida>} />
+        <Route path="/admin/administradores" element={<RutaProtegida roles={['ADMIN']}><AdminAdministradores /></RutaProtegida>} />
+        <Route path="/admin/administradores/nuevo" element={<RutaProtegida roles={['ADMIN']}><AdminAdministradorForm /></RutaProtegida>} />
+        <Route path="/admin/administradores/:id" element={<RutaProtegida roles={['ADMIN']}><AdminAdministradorForm /></RutaProtegida>} />
         <Route path="/admin/vendedores" element={<RutaProtegida roles={['ADMIN']}><AdminVendedores /></RutaProtegida>} />
         <Route path="/admin/vendedores/nuevo" element={<RutaProtegida roles={['ADMIN']}><AdminVendedorForm /></RutaProtegida>} />
         <Route path="/admin/vendedores/:id" element={<RutaProtegida roles={['ADMIN']}><AdminVendedorForm /></RutaProtegida>} />

@@ -6,12 +6,18 @@
  * vende el carton, genera el PDF con el QR de validacion y devuelve el enlace
  * de WhatsApp. El enlace se abre en el mismo gesto del boton y solo llega si
  * quien carga es un VENDEDOR: el administrador recibe unicamente el PDF.
+ *
+ * La pantalla esta pensada para un vendedor de pie, con una mano, en la calle:
+ * campos de 44px de alto, teclado numerico donde corresponde, y los errores
+ * junto al campo que los causa en lugar de un cartel arriba que obliga a
+ * buscar cual de los cuatro campos esta mal.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jugadoresApi, sorteosApi } from '../../api/endpoints';
 import SelectorNumeros from '../../components/SelectorNumeros';
-import { Alerta, Cargando } from '../../components/ui';
+import { Alerta, Campo, Cargando, GrupoCampo, ResumenErrores } from '../../components/ui';
+import { dni, erroresDeApi, texto, validar, whatsapp } from '../../utils/validacion';
 
 const VACIO = {
   apellido: '',
@@ -20,15 +26,35 @@ const VACIO = {
   whatsapp: '',
 };
 
+const REGLAS = {
+  apellido: texto('el apellido'),
+  nombre: texto('el nombre'),
+  dni,
+  whatsapp,
+};
+
+// Los id son fijos y no generados: el resumen de errores necesita poder
+// enlazar a cada campo, y un id estable ademas sirve para las pruebas.
+const CAMPOS = {
+  apellido: { id: 'jugador-apellido', etiqueta: 'Apellido' },
+  nombre: { id: 'jugador-nombre', etiqueta: 'Nombre' },
+  dni: { id: 'jugador-dni', etiqueta: 'DNI' },
+  whatsapp: { id: 'jugador-whatsapp', etiqueta: 'WhatsApp' },
+};
+
 export default function JugadorForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState(VACIO);
+  const [errores, setErrores] = useState({});
   const [numeros, setNumeros] = useState([]);
+  const [errorNumeros, setErrorNumeros] = useState('');
   const [sorteo, setSorteo] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [mensaje, setMensaje] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState(null);
+  const formRef = useRef(null);
+  const resumenRef = useRef(null);
 
   useEffect(() => {
     sorteosApi
@@ -38,17 +64,52 @@ export default function JugadorForm() {
       .finally(() => setCargando(false));
   }, []);
 
-  const campo = (clave) => (e) => setForm((f) => ({ ...f, [clave]: e.target.value }));
+  const campo = (clave) => (e) => {
+    const { value } = e.target;
+    setForm((f) => ({ ...f, [clave]: value }));
+    // El error se borra al corregir, no al enviar de nuevo: dejarlo puesto
+    // mientras el usuario ya arreglo el campo es ruido que no informa nada.
+    setErrores((prev) => (prev[clave] ? { ...prev, [clave]: undefined } : prev));
+  };
+
+  /** Valida un campo al salir de el, para avisar antes de llegar al boton. */
+  const alSalir = (clave) => () => {
+    const mensajeError = REGLAS[clave]?.(form[clave], form);
+    setErrores((prev) => ({ ...prev, [clave]: mensajeError || undefined }));
+  };
 
   const ventaAbierta = sorteo?.estado === 'EN_VENTA';
   const cantidad = sorteo?.numeros_por_carton || 10;
+
+  /**
+   * Con un solo error, el foco va directo al campo: es lo mas rapido.
+   * Con varios va al resumen, porque enfocar uno solo esconde los demas.
+   */
+  const enfocarError = (mapa) => {
+    const conError = Object.keys(REGLAS).filter((c) => mapa[c]);
+    if (conError.length === 0) return;
+    if (conError.length > 1) {
+      resumenRef.current?.focus();
+      return;
+    }
+    document.getElementById(CAMPOS[conError[0]].id)?.focus();
+  };
 
   const enviar = async (e) => {
     e.preventDefault();
     setMensaje(null);
 
-    if (ventaAbierta && numeros.length > 0 && numeros.length !== cantidad) {
-      setMensaje({ tipo: 'error', texto: `Debe elegir exactamente ${cantidad} numeros o ninguno.` });
+    const mapa = validar(form, REGLAS);
+    const faltanNumeros =
+      ventaAbierta && numeros.length > 0 && numeros.length !== cantidad
+        ? `Eligió ${numeros.length} de ${cantidad} números. Complete los ${cantidad} o no elija ninguno y el jugador los carga después.`
+        : '';
+
+    setErrores(mapa);
+    setErrorNumeros(faltanNumeros);
+
+    if (Object.keys(mapa).length > 0 || faltanNumeros) {
+      enfocarError(mapa);
       return;
     }
 
@@ -69,7 +130,7 @@ export default function JugadorForm() {
       }
 
       const textoCarton = r.carton
-        ? `\nCartón ${r.carton.codigo} generado (estado ${r.carton.estado_pago}).` +
+        ? `\nCartón ${r.carton.codigo} generado.` +
           (r.sorteo_iniciado ? '\nCon este cartón se completó la venta: el sorteo ya comenzó.' : '')
         : '';
 
@@ -83,17 +144,18 @@ export default function JugadorForm() {
       });
       setForm(VACIO);
       setNumeros([]);
+      setErrores({});
     } catch (err) {
-      setMensaje({
-        tipo: 'error',
-        texto: err.detalles ? `${err.message}: ${err.detalles.map((d) => d.mensaje).join(', ')}` : err.message,
-      });
+      const { porCampo, general } = erroresDeApi(err);
+      setErrores(porCampo);
+      setMensaje({ tipo: 'error', texto: general });
+      enfocarError(porCampo);
     } finally {
       setEnviando(false);
     }
   };
 
-  if (cargando) return <Cargando />;
+  if (cargando) return <Cargando texto="Buscando el sorteo en venta..." />;
 
   return (
     <div className="max-w-3xl space-y-4">
@@ -102,43 +164,38 @@ export default function JugadorForm() {
       {!ventaAbierta && (
         <Alerta tipo="aviso">
           {sorteo
-            ? `El sorteo N° ${sorteo.numero} esta en estado ${sorteo.estado}: puede cargar el jugador, pero no vender cartones.`
-            : 'No hay ningun sorteo con la venta abierta: puede cargar el jugador de todos modos.'}
+            ? `El sorteo N° ${sorteo.numero} no tiene la venta abierta: puede cargar el jugador, pero todavía no venderle un cartón.`
+            : 'No hay ningún sorteo con la venta abierta: puede cargar el jugador de todos modos.'}
         </Alerta>
       )}
 
-      {mensaje && <Alerta tipo={mensaje.tipo} onCerrar={() => setMensaje(null)}>{mensaje.texto}</Alerta>}
+      {mensaje && (
+        <Alerta tipo={mensaje.tipo} onCerrar={() => setMensaje(null)}>
+          {mensaje.texto}
+        </Alerta>
+      )}
 
       {/* --- Resultado del alta: PDF y reenvío por WhatsApp --- */}
       {resultado?.carton && (
         <div className="card space-y-4 ring-2 ring-emerald-300">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-slate-500">Cartón emitido</p>
-              <p className="text-lg font-bold text-slate-900">{resultado.carton.codigo}</p>
-              <p className="text-sm text-slate-600">
-                {resultado.jugador.apellido}, {resultado.jugador.nombre} — DNI {resultado.jugador.dni}
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm text-slate-600">Cartón emitido</p>
+              <p className="tabular text-lg font-bold text-slate-900">{resultado.carton.codigo}</p>
+              <p className="break-words text-sm text-slate-600">
+                {resultado.jugador.apellido}, {resultado.jugador.nombre} — DNI{' '}
+                <span className="tabular">{resultado.jugador.dni}</span>
               </p>
             </div>
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={() => setResultado(null)}
-              title="Cerrar y cargar otro jugador"
-            >
-              Cerrar
+            <button type="button" className="btn-secondary" onClick={() => setResultado(null)}>
+              Cerrar y cargar otro
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="btn-fila flex-wrap">
             {resultado.pdf?.url && (
               <>
-                <a
-                  className="btn-primary"
-                  href={resultado.pdf.url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a className="btn-primary" href={resultado.pdf.url} target="_blank" rel="noreferrer">
                   Ver el PDF del cartón
                 </a>
                 <a className="btn-secondary" href={resultado.pdf.url} download>
@@ -148,18 +205,11 @@ export default function JugadorForm() {
             )}
 
             {resultado.whatsapp?.habilitado ? (
-              <a
-                className="btn-success"
-                href={resultado.whatsapp.url}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a className="btn-success" href={resultado.whatsapp.url} target="_blank" rel="noreferrer">
                 Reabrir WhatsApp
               </a>
             ) : (
-              <span className="self-center text-sm text-slate-500">
-                {resultado.whatsapp?.motivo}
-              </span>
+              <span className="self-center text-sm text-slate-600">{resultado.whatsapp?.motivo}</span>
             )}
           </div>
 
@@ -171,7 +221,9 @@ export default function JugadorForm() {
 
           {resultado.whatsapp?.habilitado && (
             <details className="text-sm">
-              <summary className="cursor-pointer text-bingo-600">Ver el mensaje que se envía</summary>
+              <summary className="cursor-pointer font-medium text-marca-700">
+                Ver el mensaje que se envía
+              </summary>
               <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-xs text-slate-700 ring-1 ring-slate-200">
                 {resultado.whatsapp.texto}
               </pre>
@@ -180,54 +232,102 @@ export default function JugadorForm() {
         </div>
       )}
 
-      <form onSubmit={enviar} className="card space-y-5">
+      <form ref={formRef} onSubmit={enviar} noValidate className="card space-y-5">
+        <ResumenErrores
+          ref={resumenRef}
+          items={Object.keys(CAMPOS)
+            .filter((c) => errores[c])
+            .map((c) => ({ ...CAMPOS[c], mensaje: errores[c] }))}
+        />
+
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="label">Apellido *</label>
-            <input className="input" value={form.apellido} onChange={campo('apellido')} required />
-          </div>
-          <div>
-            <label className="label">Nombre *</label>
-            <input className="input" value={form.nombre} onChange={campo('nombre')} required />
-          </div>
-          <div>
-            <label className="label">DNI *</label>
-            <input className="input" value={form.dni} onChange={campo('dni')} required />
-            <p className="mt-1 text-xs text-slate-500">Sera su usuario y clave inicial.</p>
-          </div>
-          <div>
-            <label className="label">WhatsApp *</label>
-            <input
-              className="input"
-              placeholder="3764 123456"
-              value={form.whatsapp}
-              onChange={campo('whatsapp')}
-              required
-            />
-            <p className="mt-1 text-xs text-slate-500">Se normaliza al formato internacional.</p>
-          </div>
+          <Campo
+            etiqueta="Apellido"
+            requerido
+            id={CAMPOS.apellido.id}
+            name="apellido"
+            autoComplete="family-name"
+            maxLength={60}
+            value={form.apellido}
+            onChange={campo('apellido')}
+            onBlur={alSalir('apellido')}
+            error={errores.apellido}
+          />
+          <Campo
+            etiqueta="Nombre"
+            requerido
+            id={CAMPOS.nombre.id}
+            name="nombre"
+            autoComplete="given-name"
+            maxLength={60}
+            value={form.nombre}
+            onChange={campo('nombre')}
+            onBlur={alSalir('nombre')}
+            error={errores.nombre}
+          />
+          <Campo
+            etiqueta="DNI"
+            requerido
+            id={CAMPOS.dni.id}
+            name="dni"
+            /* inputMode numeric abre el teclado de números en el teléfono, que
+               es lo que el vendedor necesita, sin bloquear el pegado. */
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={8}
+            value={form.dni}
+            onChange={campo('dni')}
+            onBlur={alSalir('dni')}
+            error={errores.dni}
+            ayuda="Sin puntos. Será su usuario y su clave inicial."
+          />
+          <Campo
+            etiqueta="WhatsApp"
+            requerido
+            id={CAMPOS.whatsapp.id}
+            name="whatsapp"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            maxLength={20}
+            placeholder="3764 123456"
+            value={form.whatsapp}
+            onChange={campo('whatsapp')}
+            onBlur={alSalir('whatsapp')}
+            error={errores.whatsapp}
+            ayuda="Código de área y número. El sistema le agrega el prefijo del país."
+          />
         </div>
 
         {ventaAbierta && (
-          <fieldset className="space-y-3 border-t border-slate-200 pt-4">
-            <legend className="text-sm font-semibold text-slate-700">
-              Numeros del carton (elija {cantidad}; puede dejarlo para que el jugador lo haga)
-            </legend>
+          <GrupoCampo
+            etiqueta="Números del cartón"
+            ayuda={`Elija ${cantidad} números, o deje el cartón sin números para que los cargue el jugador.`}
+            error={errorNumeros}
+            className="fieldset"
+          >
             <SelectorNumeros
               min={sorteo.rango_min}
               max={sorteo.rango_max}
               cantidad={cantidad}
               valor={numeros}
-              onChange={setNumeros}
+              onChange={(n) => {
+                setNumeros(n);
+                setErrorNumeros('');
+              }}
             />
-          </fieldset>
+          </GrupoCampo>
         )}
 
-        <div className="flex gap-2">
+        <div className="btn-fila border-t border-slate-200 pt-5">
           <button type="submit" className="btn-primary" disabled={enviando}>
             {enviando ? 'Cargando...' : 'Cargar jugador'}
           </button>
-          <button type="button" className="btn-secondary" onClick={() => navigate('/vendedor/jugadores')}>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => navigate('/vendedor/jugadores')}
+          >
             Volver
           </button>
         </div>

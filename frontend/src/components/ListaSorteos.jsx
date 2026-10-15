@@ -46,10 +46,10 @@ function Sorteo({ jornada, misNumeros, abierto }) {
   return (
     <details
       open={abierto}
-      className="group rounded-lg border border-slate-200 bg-white open:ring-1 open:ring-bingo-200"
+      className="group rounded-lg border border-slate-200 bg-white open:ring-1 open:ring-marca-200"
     >
       <summary className="flex cursor-pointer list-none flex-wrap items-center gap-2 p-3 hover:bg-slate-50">
-        <span className="text-slate-400 transition group-open:rotate-90" aria-hidden="true">
+        <span className="text-slate-500 transition group-open:rotate-90" aria-hidden="true">
           ▶
         </span>
         <span className="font-semibold text-slate-900">{jornada.fecha}</span>
@@ -115,7 +115,7 @@ function Sorteo({ jornada, misNumeros, abierto }) {
                       <span className="text-xs font-semibold text-emerald-700">en tu cartón</span>
                     )}
                     {!f.cuenta && (
-                      <span className="text-xs text-slate-400">(ya había salido)</span>
+                      <span className="text-xs text-slate-600">(ya había salido)</span>
                     )}
                   </span>
                 )}

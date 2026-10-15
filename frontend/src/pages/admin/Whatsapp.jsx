@@ -66,8 +66,12 @@ export default function Whatsapp() {
           vinculación o para reenviar un mensaje que falló.
         </p>
         <div className="flex flex-wrap gap-2">
+          <label htmlFor="carton-reenvio" className="sr-only">
+            Cartón al que reenviar el mensaje
+          </label>
           <select
-            className="input max-w-md"
+            id="carton-reenvio"
+            className="select max-w-md"
             value={cartonId}
             onChange={(e) => setCartonId(e.target.value)}
             required

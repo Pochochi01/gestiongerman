@@ -57,7 +57,7 @@ export default function Panel() {
 
           {sorteo.estado === 'EN_VENTA' ? (
             <p className="text-sm text-slate-700">
-              Faltan <span className="font-bold text-bingo-700">{sorteo.cartones_faltantes}</span> cartones
+              Faltan <span className="font-bold text-marca-700">{sorteo.cartones_faltantes}</span> cartones
               para que empiece el sorteo.
             </p>
           ) : (
@@ -82,7 +82,7 @@ export default function Panel() {
       <div className="card space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-slate-900">Mis cartones</h2>
-          <Link to="/jugador/cartones" className="text-sm text-bingo-600 hover:underline">
+          <Link to="/jugador/cartones" className="text-sm text-marca-600 hover:underline">
             Ver todos
           </Link>
         </div>
@@ -93,7 +93,7 @@ export default function Panel() {
             {cartones.slice(0, 3).map((c) => (
               <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <div>
-                  <Link to={`/jugador/cartones/${c.id}`} className="font-medium text-bingo-700 hover:underline">
+                  <Link to={`/jugador/cartones/${c.id}`} className="font-medium text-marca-700 hover:underline">
                     {c.codigo}
                   </Link>
                   <p className="text-xs text-slate-500">

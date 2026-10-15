@@ -112,7 +112,7 @@ El QR sigue imprimiéndose también en la consola si `WA_PRINT_QR=true`.
 **Reinicio del backend.** Si `session.json` existe, se reconecta sin QR:
 
 ```
-WhatsApp: sesión encontrada en C:\Proyectos\BingoDGG\backend\session.json, reconectando sin QR
+WhatsApp: sesión encontrada en C:\Proyectos\DGG Gestión\backend\session.json, reconectando sin QR
 WhatsApp conectado (5493764123456). Sesión guardada en ...\session.json
 ```
 
@@ -174,7 +174,7 @@ Ejemplo de `GET /api/whatsapp/estado`:
     "conectado_desde": "2026-09-21T20:31:08.000Z",
     "qr": null,
     "sesion_guardada": true,
-    "archivo_sesion": "C:\\Proyectos\\BingoDGG\\backend\\session.json",
+    "archivo_sesion": "C:\\Proyectos\\DGG Gestión\\backend\\session.json",
     "intentos_reconexion": 0,
     "reconectar_en": null,
     "ultimo_error": null,
@@ -231,7 +231,7 @@ probar la vinculación recién hecha y para reenviar un mensaje que falló.
 ### Mensaje que recibe el jugador
 
 ```
-*BINGO DGG - TU CARTON*
+*DGG GESTIÓN - TU CARTON*
 
 *Sorteo N°:* 1 - Bingo de octubre
 *Carton N°:* S0001-C000001

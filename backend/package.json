@@ -1,5 +1,5 @@
 {
-  "name": "bingodgg-backend",
+  "name": "dgg-gestion-backend",
   "version": "1.0.0",
   "private": true,
   "description": "API REST del sistema de Bingo (MVC - Node + Express + MySQL)",
@@ -22,7 +22,9 @@
     "test:gestion": "node scripts/test-gestion.js",
     "migrar:pdf": "node scripts/migrar-pdf.js",
     "test:pdf": "node scripts/test-pdf.js",
-    "migrar:sin-geo": "node scripts/migrar-sin-geo.js"
+    "test:administradores": "node scripts/test-administradores.js",
+    "migrar:sin-geo": "node scripts/migrar-sin-geo.js",
+    "migrar:administradores": "node scripts/migrar-administradores.js"
   },
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.9",

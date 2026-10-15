@@ -92,13 +92,23 @@ export default function Vendedores() {
           cargar(busqueda);
         }}
       >
+        {/* La etiqueta no se dibuja porque el boton de al lado ya dice
+            "Buscar", pero existe: un placeholder desaparece al escribir y deja
+            al campo sin nombre para el lector de pantalla. */}
+        <label htmlFor="buscar-vendedor" className="sr-only">
+          Buscar por apellido, nombre o DNI
+        </label>
         <input
+          id="buscar-vendedor"
+          type="search"
           className="input max-w-xs"
           placeholder="Buscar por apellido, nombre o DNI"
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
         />
-        <button type="submit" className="btn-secondary">Buscar</button>
+        <button type="submit" className="btn-secondary">
+          Buscar
+        </button>
       </form>
 
       {cargando ? (

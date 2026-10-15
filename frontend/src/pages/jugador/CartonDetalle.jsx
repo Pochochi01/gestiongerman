@@ -30,7 +30,7 @@ export default function CartonDetalle() {
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-slate-900">Carton {carton.codigo}</h1>
-        <Link to="/jugador/cartones" className="text-sm text-bingo-600 hover:underline">
+        <Link to="/jugador/cartones" className="text-sm text-marca-600 hover:underline">
           Volver
         </Link>
       </div>

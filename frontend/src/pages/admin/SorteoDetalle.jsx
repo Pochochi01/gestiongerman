@@ -88,7 +88,7 @@ export default function SorteoDetalle() {
       {/* --- Encabezado --- */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link to="/admin/sorteos" className="text-sm text-bingo-600 hover:underline">
+          <Link to="/admin/sorteos" className="text-sm text-marca-600 hover:underline">
             ← Volver a sorteos
           </Link>
           <h1 className="text-xl font-bold text-slate-900">
